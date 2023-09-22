@@ -1,6 +1,6 @@
 # SignBank+ - Cleaning and Extending the SignBank Dataset
 
-[Paper (Coming Soon)]()
+[Paper](https://arxiv.org/abs/2309.11566)
 
 The [SignBank](https://www.signbank.org/signpuddle/) dataset is a collection of SignWriting examples, contributed by the
 community.

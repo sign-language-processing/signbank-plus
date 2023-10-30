@@ -145,21 +145,21 @@ def save_test(path: Path, data: iter):
                     f.write(references[i])
                 f.write("\n")
 
+
 if __name__ == "__main__":
     parallel_path = Path(__file__).parent.parent / "data" / "parallel"
 
-    # save_test(parallel_path / "test", test_set())
-    #
-    # save_splits(parallel_path / "original", get_original_data())
-    # save_splits(parallel_path / "cleaned", get_cleaned_data())
-    # save_splits(parallel_path / "expanded", itertools.chain.from_iterable([
-    #     get_expanded_data(),
-    #     get_expanded_data_en()
-    # ]), ["$extra"])
+    save_test(parallel_path / "test", test_set())
+
+    save_splits(parallel_path / "original", get_original_data())
+    save_splits(parallel_path / "cleaned", get_cleaned_data())
+    save_splits(parallel_path / "expanded", itertools.chain.from_iterable([
+        get_expanded_data(),
+        get_expanded_data_en()
+    ]), ["$extra"])
+
     save_splits(parallel_path / "more", itertools.chain.from_iterable([
         get_source_target(load_data("sign2mint"), field="texts"),
         get_source_target(load_data("signsuisse"), field="texts"),
         get_source_target(load_data("fingerspelling"), field="texts"),
     ]), dev_num=0)
-
-    # TODO fingerspelling data

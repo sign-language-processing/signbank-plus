@@ -24,7 +24,11 @@ This repository includes the `data` directory, which includes:
 - [`gpt-3.5-expanded.en.csv`](data/gpt-3.5-expanded.csv) - Expansion of the cleaned dataset, with English terms.
 - [`benchmark.csv`](data/benchmark.csv) - Small subset of data manually annotated and automatically cleaned in various
   ways.
-- [`fingerspelling/*.txt`](data/fingerspelling) - Includes fingerspellings for various languages. `fingerspelling.py` is used to generate fingerspelling from words.
+- [`fingerspelling/*.txt`](data/fingerspelling) - Includes fingerspellings for various languages. `fingerspelling.py` is
+  used to generate fingerspelling from words (see [`fingerspelling.csv`](data/fingerspelling.csv)).
+- [`signsuisse.csv`](data/signsuisse.csv) - Automatically aligned data from the French Sign Language of Switzerland
+  dictionary and SignBank.
+- [`sign2mint.csv`](data/sign2mint.csv) - Extra German Sign Language SignWriting data from Sign2Mint.
 
 ### Notes:
 
@@ -35,6 +39,9 @@ This repository includes the `data` directory, which includes:
 
 Using the [`fingerspelling`](signbank_plus/signwriting/fingerspelling.py) script, you can generate
 SignWriting fingerspelling from words. This is useful for generating data for fingerspelling translation.
+
+The [`fingerspelling_faker`](signbank_plus/signwriting/fingerspelling_faker.py) script generates
+synthetic fingerspelling data for machine translation.
 
 ## Machine Translation
 

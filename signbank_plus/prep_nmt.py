@@ -1,4 +1,5 @@
 import csv
+import gzip
 import itertools
 import random
 from collections import defaultdict
@@ -17,8 +18,8 @@ def get_source_target(data, field="annotated_texts"):
             for text in instance[field]:
                 if len(text.strip()) > 0 and len(instance["sign_writing"].strip()) > 0:
                     yield {
-                        "puddle_id": instance["puddle_id"],
-                        "example_id": instance["example_id"],
+                        "puddle_id": instance["puddle_id"] if "puddle_id" in instance else None,
+                        "example_id": instance["example_id"] if "example_id" in instance else None,
                         "flags": [instance["spoken_language"], instance["sign_language"]],
                         "source": instance["sign_writing"].strip(),
                         "target": text.strip(),
@@ -61,11 +62,14 @@ def test_set():
     yield from get_source_target(data, field="gold_texts")
 
 
-def save_parallel_csv(path: Path, data: iter, split="train"):
-    f_source = open(f"{path}.{split}.source", "w", encoding="utf-8")
-    f_source_tokenized = open(f"{path}.{split}.source.tokenized", "w", encoding="utf-8")
-    f_target = open(f"{path}.{split}.target", "w", encoding="utf-8")
-    f_csv = open(f"{path}.{split}.csv", "w", encoding="utf-8")
+def save_parallel_csv(path: Path, data: iter, split="train", extra_flags=[]):
+    f_source = open(f"{path}/{split}.source", "w", encoding="utf-8")
+    f_source_tokenized = open(f"{path}/{split}.source.tokenized", "w", encoding="utf-8")
+    f_target = open(f"{path}/{split}.target", "w", encoding="utf-8")
+    f_csv = open(f"{path}/{split}.csv", "w", encoding="utf-8")
+
+    f_spoken_gzip = gzip.open(path.joinpath(f'{split}.spoken.gz'), 'wt')
+    f_signed_gzip = gzip.open(path.joinpath(f'{split}.signed.gz'), 'wt')
 
     tokenizer = SignWritingTokenizer()
 
@@ -73,8 +77,8 @@ def save_parallel_csv(path: Path, data: iter, split="train"):
     writer.writeheader()
     for instance in tqdm(data):
         if 0 < len(instance["target"]) < 512 and 0 < len(instance["source"]) < 1024:
-            flags = [f"${flag}" for flag in instance["flags"]]
-            source = " ".join(flags) + " " + instance["source"]
+            flags = " ".join([f"${flag}" for flag in instance["flags"]])
+            source = flags + " " + instance["source"]
             writer.writerow({
                 "source": source,
                 "target": instance["target"],
@@ -83,28 +87,36 @@ def save_parallel_csv(path: Path, data: iter, split="train"):
             f_target.write(instance["target"] + "\n")
 
             tokenized_source = " ".join(tokenizer.text_to_tokens(instance["source"]))
-            tokenized_source = " ".join(flags) + " " + tokenized_source
-            f_source_tokenized.write(tokenized_source + "\n")
+            f_source_tokenized.write(flags + " " + tokenized_source + "\n")
+
+            gzip_flags = " ".join(extra_flags) + " " + flags
+            tokenized_target = " ".join(list(instance["target"].replace(" ", "_")))
+            f_spoken_gzip.write(gzip_flags + " " + tokenized_target + "\n")
+            f_signed_gzip.write(gzip_flags + " " + tokenized_source + "\n")
 
     f_source.close()
+    f_source_tokenized.close()
     f_target.close()
     f_csv.close()
 
 
-def save_splits(path: Path, data: iter):
-    save_parallel_csv(path, itertools.islice(data, 3000), split="dev")
-    save_parallel_csv(path, data, split="train")
+def save_splits(path: Path, data: iter, extra_flags: list = [], dev_num=3000):
+    path.mkdir(parents=True, exist_ok=True)
+    if dev_num > 0:
+        save_parallel_csv(path, itertools.islice(data, dev_num), split="dev", extra_flags=extra_flags)
+    save_parallel_csv(path, data, split="train", extra_flags=extra_flags)
 
 
 def save_test(path: Path, data: iter):
-    save_parallel_csv(path, data, split="all")
+    path.mkdir(parents=True, exist_ok=True)
+    save_parallel_csv(path, data, split="all", extra_flags=["$extra"])
 
     # Read source file and target file
-    with open(f"{path}.all.source", 'r') as f:
+    with open(f"{path}/all.source", 'r') as f:
         source_lines = [l.strip() for l in f.readlines()]
-    with open(f"{path}.all.source.tokenized", 'r') as f:
+    with open(f"{path}/all.source.tokenized", 'r') as f:
         source_lines_tokenized = [l.strip() for l in f.readlines()]
-    with open(f"{path}.all.target", 'r') as f:
+    with open(f"{path}/all.target", 'r') as f:
         target_lines = [l.strip() for l in f.readlines()]
 
     source_map = {source_tokenized: source for source_tokenized, source in zip(source_lines_tokenized, source_lines)}
@@ -133,15 +145,21 @@ def save_test(path: Path, data: iter):
                     f.write(references[i])
                 f.write("\n")
 
-
 if __name__ == "__main__":
     parallel_path = Path(__file__).parent.parent / "data" / "parallel"
 
-    save_test(parallel_path / "test", test_set())
+    # save_test(parallel_path / "test", test_set())
+    #
+    # save_splits(parallel_path / "original", get_original_data())
+    # save_splits(parallel_path / "cleaned", get_cleaned_data())
+    # save_splits(parallel_path / "expanded", itertools.chain.from_iterable([
+    #     get_expanded_data(),
+    #     get_expanded_data_en()
+    # ]), ["$extra"])
+    save_splits(parallel_path / "more", itertools.chain.from_iterable([
+        get_source_target(load_data("sign2mint"), field="texts"),
+        get_source_target(load_data("signsuisse"), field="texts"),
+        get_source_target(load_data("fingerspelling"), field="texts"),
+    ]), dev_num=0)
 
-    save_splits(parallel_path / "original", get_original_data())
-    save_splits(parallel_path / "cleaned", get_cleaned_data())
-    save_splits(parallel_path / "expanded", itertools.chain.from_iterable([
-        get_expanded_data(),
-        get_expanded_data_en()
-    ]))
+    # TODO fingerspelling data

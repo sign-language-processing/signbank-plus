@@ -24,7 +24,7 @@ This repository includes the `data` directory, which includes:
 - [`gpt-3.5-expanded.en.csv`](data/gpt-3.5-expanded.csv) - Expansion of the cleaned dataset, with English terms.
 - [`benchmark.csv`](data/benchmark.csv) - Small subset of data manually annotated and automatically cleaned in various
   ways.
-- [`fingerspelling/*.txt`](data/fingerspelling) - Includes fingerspellings for various languages.
+- [`fingerspelling/*.txt`](data/fingerspelling) - Includes fingerspellings for various languages. `fingerspelling.py` is used to generate fingerspelling from words.
 
 ### Notes:
 

@@ -64,3 +64,5 @@ def join_signs(*fsws: str, spacing: int = 0):
                               new_sign["box"]["position"][1] - sign_middle + symbol["position"][1])
 
     return sign_to_fsw(new_sign)
+
+

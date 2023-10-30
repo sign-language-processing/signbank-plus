@@ -1,9 +1,6 @@
 import csv
 from pathlib import Path
 
-from clean_rules import clean_instance
-
-
 def load_file(name: str, array_fields: list[str] = ["texts", "annotated_texts"]):
     csv_path = Path(__file__).parent.parent / "data" / f"{name}.csv"
     with open(csv_path, "r", encoding="utf-8") as f:
@@ -11,7 +8,8 @@ def load_file(name: str, array_fields: list[str] = ["texts", "annotated_texts"])
         all_instances = list(csv.DictReader(f))
 
     for instance in all_instances:
-        instance["puddle_id"] = int(instance["puddle_id"])
+        if "puddle_id" in instance:
+            instance["puddle_id"] = int(instance["puddle_id"])
         for field in array_fields:
             if field in instance:
                 instance[field] = [t.strip() for t in instance[field].split("᛫")]

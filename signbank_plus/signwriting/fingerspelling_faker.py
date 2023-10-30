@@ -1,3 +1,4 @@
+import random
 from collections import OrderedDict
 from pathlib import Path
 
@@ -93,11 +94,18 @@ def my_name_is(language: str, country: str, iana: str, chars: dict):
 
         fake = Faker(f'{language.lower()}_{country.upper()}')
         Faker.seed(42)
+        random.seed(42)
         for i in range(1000):
             for faker_type in ['name', 'first_name', 'last_name']:
                 spoken_name = fake.__getattr__(faker_type)()
                 signed_name = spoken_text_fingerspelling(strip_all(spoken_name, space=False), chars)
-                yield spoken_sentence.format(name=spoken_name), signed_sentence.format(name=signed_name)
+                spoken_name_sentence = spoken_sentence.format(name=spoken_name)
+                signed_name_sentence = signed_sentence.format(name=signed_name)
+                if random.random() < 0.5:
+                    spoken_name_sentence += "."
+                    signed_name_sentence += " S38800464x496"
+
+                yield spoken_name_sentence, signed_name_sentence
 
 
 def fake_data_signed(language: str, country: str, iana: str, chars: dict):

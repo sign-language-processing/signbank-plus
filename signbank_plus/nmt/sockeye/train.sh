@@ -73,6 +73,7 @@ python -m sockeye.train -d $2/train_data \
 #  watch tail train.out
 
 # srun --pty -n 1 -c 2 --time=01:00:00 --gres=gpu:1 --constraint=GPUMEM32GB --mem=8G bash -l
+# srun --pty -n 1 -c 2 --time=01:00:00 --mem=8G bash -l
 # python -c "import torch; print([(i, torch.cuda.get_device_properties(i)) for i in range(torch.cuda.device_count())])"
 # python -c "import tensorflow as tf; print(tf.config.list_physical_devices('GPU'))"
 

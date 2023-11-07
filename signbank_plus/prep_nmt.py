@@ -109,7 +109,7 @@ def save_splits(path: Path, data: iter, extra_flags: list = [], dev_num=3000):
 
 def save_test(path: Path, data: iter):
     path.mkdir(parents=True, exist_ok=True)
-    save_parallel_csv(path, data, split="all", extra_flags=["$extra"])
+    save_parallel_csv(path, data, split="all")
 
     # Read source file and target file
     with open(f"{path}/all.source", 'r') as f:
@@ -156,7 +156,7 @@ if __name__ == "__main__":
     save_splits(parallel_path / "expanded", itertools.chain.from_iterable([
         get_expanded_data(),
         get_expanded_data_en()
-    ]), ["$extra"])
+    ]), ["$extra"], dev_num=0)
 
     save_splits(parallel_path / "more", itertools.chain.from_iterable([
         get_source_target(load_data("sign2mint"), field="texts"),

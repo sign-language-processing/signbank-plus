@@ -1,8 +1,11 @@
 # Building the image:
 
 - run `nvidia-smi`
-    - change "FROM" according to your CUDA version (must be ubuntu18.04)
-    - change "gpu=4" and "numgpus=4" according to your GPU count
+  - edit `Dockerfile`:
+      - change "FROM" according to your CUDA version (must be ubuntu18.04)
+      - change "gpu=4" and "numgpus=4" according to your GPU count
+  - edit `profile.yaml`:
+      - change "gpu=4" and "numgpus=4" according to your GPU count
 - build the image:
     - run `nvidia-docker build . -t bergamot`
 
@@ -55,12 +58,9 @@ To reset the training for all experiments, just delete the training directory fr
 rm -r /data/*
 ```
 
-## No longer necessary?
 
-First, mark the number of GPUs you have in `./firefox-translations-training/profiles/local/config.yaml`
+# Notes!
 
+## GPUs
 
-```bash
-# Because of a bug in the mono-corpus code, create a temporary directory
-mkdir -p /training/data/spoken-signed/spoken_to_signed/original/mono/custom-mono_/custom_corpus/common_words/original/custom-mono_/custom_corpus/common_words/
-```
+Updating from 1 to 4 2080Ti GPUs increases throughput from `26,318.99 words/s` to `44,707.07 words/s`.

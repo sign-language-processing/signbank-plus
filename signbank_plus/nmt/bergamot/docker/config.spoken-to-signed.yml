@@ -9,7 +9,7 @@ experiment:
   name: spoken_to_signed
   src: spoken
   trg: signed
-  spm-vocab-size: 1668 # Words tokenizer can't run with number higher than the number of words
+  spm-vocab-size: 1672 # Words tokenizer can't run with number higher than the number of words
 
   teacher-ensemble: 2
   # path to a pretrained backward model (optional)

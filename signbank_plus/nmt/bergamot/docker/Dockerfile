@@ -1,9 +1,11 @@
 FROM nvidia/cuda:11.5.2-devel-ubuntu18.04
 
 RUN apt-get update; apt-get update
-RUN apt-get install git nano -y # git is needed for cloning the repository, nano is needed for debugging files
+# git is needed for cloning the repository
+# nano is needed for debugging files
+# curl is needed for "download_mono" in the `make test` script
+RUN apt-get install git nano curl -y
 
-RUN echo "cache-buster"
 RUN git clone https://github.com/sign-language-processing/firefox-translations-training.git
 WORKDIR firefox-translations-training
 
@@ -26,6 +28,8 @@ RUN sed -i 's/^resources:\ gpu=8/resources:\ gpu=4/' profiles/local/config.yaml
 RUN sed -i 's/numgpus=8/numgpus=4/' profiles/local/config.yaml
 RUN sed -i 's/workspace=12000/workspace=4000/' profiles/local/config.yaml
 
-# Downloads and compiles additional packages
-# This command might fail, however, it is still good to install the dependencies in advanced.
+# disables the Shared Memory (SHM) transports, which gives us multi-gpu issues.
+ENV NCCL_SHM_DISABLE=1
+
+# Downloads and compiles additional packages. It is good to install the dependencies in advance.
 RUN make test TARGET=train_vocab; exit 0

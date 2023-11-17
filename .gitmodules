@@ -1,0 +1,3 @@
+[submodule "signbank_plus/nmt/signwriting-translation"]
+	path = signbank_plus/nmt/signwriting-translation
+	url = git@github.com:J22Melody/signwriting-translation.git

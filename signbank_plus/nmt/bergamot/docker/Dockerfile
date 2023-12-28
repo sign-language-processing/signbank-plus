@@ -28,8 +28,8 @@ RUN sed -i 's/^resources:\ gpu=8/resources:\ gpu=4/' profiles/local/config.yaml
 RUN sed -i 's/numgpus=8/numgpus=4/' profiles/local/config.yaml
 RUN sed -i 's/workspace=12000/workspace=4000/' profiles/local/config.yaml
 
-# disables the Shared Memory (SHM) transports, which gives us multi-gpu issues.
-ENV NCCL_SHM_DISABLE=1
+# disable the Shared Memory (SHM) transports if not shm is available, to prevent multi-gpu issues.
+#ENV NCCL_SHM_DISABLE=1
 
 # Downloads and compiles additional packages. It is good to install the dependencies in advance.
 RUN make test TARGET=train_vocab; exit 0

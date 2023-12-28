@@ -10,6 +10,8 @@ from tqdm import tqdm
 from load_data import load_data, load_file
 from signwriting.signwriting_tokenizer import SignWritingTokenizer
 
+ALL_FLAGS = set()
+
 
 def get_source_target(data, field="annotated_texts"):
     random.Random(42).shuffle(data)  # Shuffle data consistently
@@ -63,6 +65,9 @@ def test_set():
 
 
 def save_parallel_csv(path: Path, data: iter, split="train", extra_flags=[]):
+    for flag in extra_flags:
+        ALL_FLAGS.add(flag)
+
     f_source = open(f"{path}/{split}.source", "w", encoding="utf-8")
     f_source_tokenized = open(f"{path}/{split}.source.tokenized", "w", encoding="utf-8")
     f_target = open(f"{path}/{split}.target", "w", encoding="utf-8")
@@ -77,7 +82,11 @@ def save_parallel_csv(path: Path, data: iter, split="train", extra_flags=[]):
     writer.writeheader()
     for instance in tqdm(data):
         if 0 < len(instance["target"]) < 512 and 0 < len(instance["source"]) < 1024:
-            flags = " ".join([f"${flag}" for flag in instance["flags"]])
+            flag_tokens = [f"${flag}" for flag in instance["flags"]]
+            for flag in flag_tokens:
+                ALL_FLAGS.add(flag)
+            flags = " ".join(flag_tokens)
+
             source = flags + " " + instance["source"]
             writer.writerow({
                 "source": source,
@@ -86,13 +95,15 @@ def save_parallel_csv(path: Path, data: iter, split="train", extra_flags=[]):
             f_source.write(source + "\n")
             f_target.write(instance["target"] + "\n")
 
-            tokenized_source = " ".join(tokenizer.text_to_tokens(instance["source"]))
+            tokens_source = list(tokenizer.text_to_tokens(instance["source"]))
+            tokenized_source = " ".join(tokens_source)
             f_source_tokenized.write(flags + " " + tokenized_source + "\n")
 
             gzip_flags = " ".join(extra_flags) + " " + flags
-            tokenized_target = " ".join(list(instance["target"].replace(" ", "_")))
-            f_spoken_gzip.write(gzip_flags + " " + tokenized_target + "\n")
-            f_signed_gzip.write(gzip_flags + " " + tokenized_source + "\n")
+            # We detokenize the SignWriting, which removes "A" prefixes, and box placement
+            detokenized_source = tokenizer.tokens_to_text(tokens_source)
+            f_spoken_gzip.write(gzip_flags + " " + instance["target"] + "\n")
+            f_signed_gzip.write(gzip_flags + " " + detokenized_source + "\n")
 
     f_source.close()
     f_source_tokenized.close()
@@ -156,10 +167,12 @@ if __name__ == "__main__":
     save_splits(parallel_path / "expanded", itertools.chain.from_iterable([
         get_expanded_data(),
         get_expanded_data_en()
-    ]), ["$extra"], dev_num=0)
+    ])) #, ["$extra"], dev_num=0)
 
     save_splits(parallel_path / "more", itertools.chain.from_iterable([
         get_source_target(load_data("sign2mint"), field="texts"),
         get_source_target(load_data("signsuisse"), field="texts"),
         get_source_target(load_data("fingerspelling"), field="texts"),
     ]), dev_num=0)
+
+    print(",".join(ALL_FLAGS))

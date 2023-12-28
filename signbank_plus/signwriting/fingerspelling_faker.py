@@ -23,6 +23,8 @@ def fake_text_data(language: str, country: str):
     if language == "es" and country in ["hn", "ni"]:
         country = "es"
 
+    samples = 3000 if language == "en" else 300
+
     fake = Faker(f'{language.lower()}_{country.upper()}')
     fake.add_provider(person.Provider)
     Faker.seed(0)
@@ -68,7 +70,7 @@ def fake_text_data(language: str, country: str):
     }
 
     for category, stripper in FAKE_CATEGORIES.items():
-        for i in range(300):
+        for i in range(samples):
             value = str(fake.__getattr__(category)()).replace("\n", " \\n ")
             yield value, stripper(value)
 

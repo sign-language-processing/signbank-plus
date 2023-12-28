@@ -4,29 +4,21 @@ This NMT implementation is targeting production use, and is based on the [Bergam
 
 Therefore, data is prepared differently than in our other NMT implementations.
 
+## Data
+
+Upload the data to the server
+```bash
+rsync -avz --progress data/ nlp:/home/nlp/amit/sign-language/signbank-annotation/signbank-plus/data/
+```
+
 ## Tokenization
-
-### Signed Languages
-
-SignWriting is tokenized using our SignWriting tokenizer. For example:
-
-```
-M526x565S30004482x483S20710484x522S15d52499x546
-```
-
-Becomes:
-
-```
-M p526 p565 S300 c0 r4 p482 p483 S207 c1 r0 p484 p522 S15d c5 r2 p499 p546
-```
-
-This tokenization saves about 60% of the tokens over character-level, and is already split to minimal units.
 
 ### Spoken Languages
 
-Spoken language text is tokenized using a character-level tokenizer.
-This is due to having fingerspelling in the data, which is otherwise not split into minimal units.
+Currently spoken languages are tokenized using a BPE tokenizer.
 
+Spoken language text might need to be tokenized using a character-level tokenizer.
+This is due to having fingerspelling in the data, which is otherwise not split into minimal units.
 This approach might not be ideal for longer texts, but BPE or other approaches may hurt fingerspelling, and
 morphologically rich languages.
 
@@ -55,3 +47,20 @@ Our dev set is `benchmark.csv`
 - **cleaned**: we use `gpt-3.5-cleaned.csv`, `bible.csv` and `manually-cleaned.csv`. 
 - **more**: we use `sign2mint.csv`, `signsuisse.csv` and `fingerspelling.csv`.
 - **expanded**: we use `gpt-3.5-expanded.csv` and `gpt-3.5-expanded.en.csv` for extra data with the `$extra` flag.
+
+
+## Model
+
+We share a bergamot model trained on the above data, and using the above tokenization. in the `exported` directory.
+
+```bash
+# To download a local copy
+scp -r "nlp:/home/nlp/amit/bergamot_models/models/spoken-signed/spoken_to_signed/exported" .
+scp -r "nlp:/home/nlp/amit/bergamot_models/models/spoken-signed/spoken_to_signed_bpe4/exported" .
+
+# Extract all .gz files to $EXPORTED_DIR/extracted
+gunzip -r exported
+
+# To upload a new model to production
+gsutil -m cp -r exported/* gs://sign-mt-assets/models/browsermt/spoken-to-signed/spoken-signed
+```

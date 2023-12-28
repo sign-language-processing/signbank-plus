@@ -1,15 +1,9 @@
-####
-# Example of a production config
-# Change language pair, experiment name, datasets and other settings if needed
-# Training low resource languages might require more tuning of pipeline/training/configs
-###
-
-
 experiment:
-  name: spoken_to_signed
+  name: spoken_to_signed_bpe4
   src: spoken
   trg: signed
-  spm-vocab-size: 1672 # Words tokenizer can't run with number higher than the number of words
+  spm-vocab-size: 8000
+  spm-user-defined-symbols: "$ca,$haf,$ssp,$cse,$isr,$ukl,$eo,$tss,$isg,$mw,$sfs,$nsp,$xml,$tsq,$svk,$uk,$jos,$esl,$es,$ugy,$pt,$tsm,$bfi,$tr,$fil,$hsh,$gr,$mfs,$sdl,$ms,$sk,$bvl,$bg,$en,$ru,$fr,$slf,$gsg,$no,$jsl,$vsl,$bzs,$zh-TW,$mt,$sq,$ht,$fsl,$xki,$ins,$vgt,$da,$eth,$ps,$zh-CN,$esn,$hi,$asq,$hds,$sl,$tse,$pys,$pl,$pks,$ssr,$gn,$mdl,$dse,$sls,$lws,$ne,$fse,$nzs,$he,$zh,$prl,$ncs,$de,$ja,$ko,$csg,$csl,$psr,$ar,$sw,$ysl,$pso,$sfb,$bqn,$fi,$cs,$nsi,$swl,$rsl,$vn,$nsl,$rms,$csn,$sv,$is,$sgg,$afg,$aed,$fcs,$th,$csc,$hu,$psc,$sqk,$,$icl,$am,$ur,$ase,$nl,$kvk,$it,$ro,$gss,$dsl,$asf,$ise,$psp"
 
   teacher-ensemble: 2
   # path to a pretrained backward model (optional)
@@ -21,7 +15,7 @@ experiment:
   mono-max-sentences-src: 100000000
   mono-max-sentences-trg: 20000000
   # split corpus to parallelize translation
-  split-length: 2000000
+  split-chunks: 10
   # vocab training sample
   spm-sample-size: 10000000
 
@@ -34,32 +28,48 @@ experiment:
 
 
 marian-args:
-  # these configs override pipeline/train/configs
   training-backward:
-    # change based on available training data
-    after: 20e
-  #  training-teacher-base:
-    # remove for low resource languages or if training without augmentation
-    # after: 2e
-  # these configs override pipeline/translate/decoder.yml
+    after: 30e
+
+    valid-max-length: 512
+    max-length: 512
+
   decoding-backward:
     # 12 Gb GPU, s2s model
     mini-batch-words: 2000
     beam-size: 12
+
+    max-length: 512
+
   decoding-teacher:
-    # 12 Gb GPU, ensemble of 2 teachers
     mini-batch-words: 1000
-    # 2080ti or newer
-    # precision: float16
+
+    max-length: 512
+
+  training-teacher-base:
+    valid-max-length: 512
+    max-length: 512
+
+  training-teacher-finetuned:
+    valid-max-length: 512
+    max-length: 512
+
+  training-student:
+    valid-max-length: 512
+    max-length: 512
+
+  training-student-finetuned:
+    valid-max-length: 512
+    max-length: 512
 
 datasets:
   # parallel training corpus
   train:
     - custom-corpus_/corpora/parallel/cleaned/train
-    - custom-corpus_/corpora/parallel/expanded/train
+    - custom-corpus_/corpora/parallel/cleaned/dev
     - custom-corpus_/corpora/parallel/more/train
   devtest:
-    - custom-corpus_/corpora/parallel/cleaned/dev
+    - custom-corpus_/corpora/parallel/test/all
   test:
     - custom-corpus_/corpora/parallel/test/all
   # monolingual datasets (ex. paracrawl-mono_paracrawl8, commoncrawl_wmt16, news-crawl_news.2020)

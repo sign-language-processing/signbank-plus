@@ -1,4 +1,4 @@
-# SignBank+ - Cleaning and Extending the SignBank Dataset
+# SignBank+: Preparing a Multilingual Sign Language  Dataset\\for Machine Translation Using Large Language Models
 
 [Paper](https://arxiv.org/abs/2309.11566)
 
@@ -39,7 +39,6 @@ This repository includes the `data` directory, which includes:
 
 Using the [`fingerspelling`](signbank_plus/signwriting/fingerspelling.py) script, you can generate
 SignWriting fingerspelling from words. This is useful for generating data for fingerspelling translation.
-
 The [`fingerspelling_faker`](signbank_plus/signwriting/fingerspelling_faker.py) script generates
 synthetic fingerspelling data for machine translation.
 
@@ -51,6 +50,10 @@ machine translation training, in the [data/parallel](data/parallel) directory.
 The [signbank_plus/nmt](signbank_plus/nmt) directory includes scripts for training and evaluating
 machine translation systems, like [Fairseq](signbank_plus/nmt/fairseq),
 [Sockeye](signbank_plus/nmt/sockeye), [OpenNMT](signbank_plus/nmt/opennmt), and [mT5](signbank_plus/nmt/mt5).
+
+Machine translation benchmarks are available in our paper.
+
+TODO: benchmark machine translation when permuting the signwriting components.
 
 ## Benchmarking Cleaning
 
@@ -72,3 +75,4 @@ The results at the moment are:
 GPT-4 is better than GPT-3.5 Turbo, but is also much more expensive.
 
 There are possible improvements to the cleaning, such as using a better model, or better prompt.
+

@@ -12,7 +12,7 @@ for variant in variants:
 
     num_samples = 0
     for split in ["train", "dev"]:
-        with open(os.path.join(DATA_DIR, f"{variant}.{split}.csv"), 'r') as f:
+        with open(os.path.join(DATA_DIR, f"{variant}/{split}.csv"), 'r') as f:
             num_samples += len(f.readlines())
     print(f"${num_samples:,}$ & ", end="")
 

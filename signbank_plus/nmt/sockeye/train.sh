@@ -1,13 +1,14 @@
 #!/bin/bash
 
 #SBATCH --job-name=train-sockeye
-#SBATCH --time=6-23:00:00
+#SBATCH --time=1-23:00:00
 #SBATCH --mem=16G
 #SBATCH --output=train.out
 
 #SBATCH --ntasks=1
 #SBATCH --gres gpu:1
-#SBATCH --constraint=GPUMEM32GB|GPUMEM80GB
+#SBATCH --constraint=GPUMEM80GB
+# Must have more than 30GB GPU memory because of "expanded" experiment
 
 set -e # exit on error
 set -x # echo commands
@@ -31,12 +32,12 @@ fi
 # Perform BPE
 pip install subword-nmt
 ## Source BPE
-#[ ! -f $2/bpe.codes.source ] && subword-nmt learn-bpe -s 3000 < $1.train.source > $2/bpe.codes.source
-#[ ! -f $2/source.bpe ] && subword-nmt apply-bpe -c $2/bpe.codes.source < $1.train.source > $2/source.bpe
+#[ ! -f $2/bpe.codes.source ] && subword-nmt learn-bpe -s 3000 < $1/train.source > $2/bpe.codes.source
+#[ ! -f $2/source.bpe ] && subword-nmt apply-bpe -c $2/bpe.codes.source < $1/train.source > $2/source.bpe
 # Target BPE
-[ ! -f $2/bpe.codes.target ] && subword-nmt learn-bpe -s 3000 < $1.train.target > $2/bpe.codes.target
-[ ! -f $2/train.target.bpe ] && subword-nmt apply-bpe -c $2/bpe.codes.target < $1.train.target > $2/train.target.bpe
-[ ! -f $2/dev.target.bpe ] && subword-nmt apply-bpe -c $2/bpe.codes.target < $1.dev.target > $2/dev.target.bpe
+[ ! -f $2/bpe.codes.target ] && subword-nmt learn-bpe -s 3000 < $1/train.target > $2/bpe.codes.target
+[ ! -f $2/train.target.bpe ] && subword-nmt apply-bpe -c $2/bpe.codes.target < $1/train.target > $2/train.target.bpe
+[ ! -f $2/dev.target.bpe ] && subword-nmt apply-bpe -c $2/bpe.codes.target < $1/dev.target > $2/dev.target.bpe
 
 # Clone sockeye if doesn't exist
 [ ! -d sockeye ] && git clone https://github.com/awslabs/sockeye.git
@@ -48,7 +49,7 @@ pip install -r requirements/requirements.txt
 #python -m sockeye.prepare_data --max-seq-len 512 -s $2/source.bpe -t $2/target.bpe -o $2/train_data
 [ ! -d $2/train_data ] && \
 python -m sockeye.prepare_data --max-seq-len 512:128 \
-                               -s $1.train.source.tokenized \
+                               -s $1/train.source.tokenized \
                                -t $2/train.target.bpe \
                                -o $2/train_data \
                                $optional_prepare_data_args
@@ -60,10 +61,10 @@ python -m sockeye.train -d $2/train_data \
                         --batch-size 512 \
                         --max-seq-len 512:128 \
                         --decode-and-evaluate 500 \
-                        --validation-source $1.dev.source.tokenized \
+                        --validation-source $1/dev.source.tokenized \
                         --validation-target $2/dev.target.bpe \
                         --optimized-metric chrf \
-                        --max-num-checkpoint-not-improved 10 \
+                        --max-num-checkpoint-not-improved 20 \
                         --output $2/model \
                         $optional_training_args
 

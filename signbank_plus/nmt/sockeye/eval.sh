@@ -1,18 +1,18 @@
 #!/bin/bash
 
 #SBATCH --job-name=eval-sockeye
-#SBATCH --time=0-1:00:00
+#SBATCH --time=0-0:30:00
 #SBATCH --mem=16G
 #SBATCH --output=eval.out
 
 #SBATCH --ntasks=1
 #SBATCH --gres gpu:1
-#SBATCH --constraint=GPUMEM32GB
+#SBATCH --constraint=GPUMEM32GB|GPUMEM80GB
 
 set -e # exit on error
 
-module load anaconda3
-source activate sockeye
+#module load anaconda3
+#source activate sockeye
 
 cd sockeye
 

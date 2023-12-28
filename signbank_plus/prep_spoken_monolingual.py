@@ -1,5 +1,4 @@
 import gzip
-import random
 from pathlib import Path
 
 from tqdm import tqdm
@@ -81,13 +80,14 @@ def save_mono_words(path: Path):
         if language in SPOKEN_SIGNED:
             signed_languages += SPOKEN_SIGNED[language]
 
+        words_count = 20000 if language == "en" else 5000
+
         for signed_language in signed_languages:
             flags = f"${language} ${signed_language}"
 
-            words = top_n_list(language, 20000)
+            words = top_n_list(language, words_count)
             for word in words:
-                tokenized = " ".join(list(word.replace(" ", "_")))
-                f_gzip.write(flags + " " + tokenized + "\n")
+                f_gzip.write(flags + " " + word + "\n")
 
     f_gzip.close()
 

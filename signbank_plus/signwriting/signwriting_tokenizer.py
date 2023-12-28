@@ -32,14 +32,18 @@ class SignWritingTokenizer(BaseTokenizer):
     def tokenize_symbol(symbol: SignSymbol):
         if symbol["symbol"] in ["B", "L", "M", "R"]:
             yield symbol["symbol"]
+
+            # We position all boxes at 500x500, since the position can be inferred from the other symbols
+            yield "p500"
+            yield "p500"
         else:
             yield symbol["symbol"][:4]  # Break symbol down
             num = int(symbol["symbol"][4:], 16)
             yield "c" + hex(num // 0x10)[2:]
             yield "r" + hex(num % 0x10)[2:]
 
-        yield "p" + str(symbol["position"][0])
-        yield "p" + str(symbol["position"][1])
+            yield "p" + str(symbol["position"][0])
+            yield "p" + str(symbol["position"][1])
 
     def text_to_tokens(self, text: str) -> List[str]:
         signs = [fsw_to_sign(f) for f in text.split(" ")]
@@ -56,6 +60,6 @@ class SignWritingTokenizer(BaseTokenizer):
         tokenized = re.sub(r'r(.)', r'0\1', tokenized)
 
         tokenized = tokenized.replace(' ', '')
-        tokenized = re.sub(r'(\d)M', r'\1 M', tokenized)
+        tokenized = re.sub(r'(\d)([MBLR])', r'\1 \2', tokenized)
 
         return tokenized

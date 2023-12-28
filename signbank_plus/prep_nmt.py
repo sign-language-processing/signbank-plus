@@ -167,7 +167,7 @@ if __name__ == "__main__":
     save_splits(parallel_path / "expanded", itertools.chain.from_iterable([
         get_expanded_data(),
         get_expanded_data_en()
-    ])) #, ["$extra"], dev_num=0)
+    ]))
 
     save_splits(parallel_path / "more", itertools.chain.from_iterable([
         get_source_target(load_data("sign2mint"), field="texts"),

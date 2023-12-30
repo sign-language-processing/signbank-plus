@@ -1,43 +1,19 @@
 import argparse
 import csv
-import functools
 import hashlib
 from csv import DictReader
 
-import os
-import subprocess
 from multiprocessing import Pool
 from pathlib import Path
-from typing import Union
 
 from tqdm import tqdm
 
-TMPDIR = os.getenv('TMPDIR', '/tmp')
-REPO_URL = 'https://github.com/sutton-signwriting/font-db.git'
-REPO_DIR = os.path.join(TMPDIR, 'font-db')
-
-
-@functools.lru_cache(maxsize=1)
-def clone_repo_if_needed():
-    if not os.path.exists(REPO_DIR):
-        print(f"Cloning repository into {REPO_DIR}...")
-        subprocess.run(["git", "clone", REPO_URL, REPO_DIR], check=True)
-
-    # check if node_modules exists
-    if not os.path.exists(os.path.join(REPO_DIR, 'node_modules')):
-        print("Installing dependencies...")
-        subprocess.run(["npm", "install"], cwd=REPO_DIR, check=True)
-
-
-def signwriting_to_image(fsw: str, output: Union[str, Path]):
-    clone_repo_if_needed()
-
-    cmd = f'node {REPO_DIR}/fsw/fsw-sign-png "{fsw}" {output}'
-    subprocess.run(cmd, shell=True, check=True)
+from signwriting.visualizer.visualize import signwriting_to_image
 
 
 def process_fsw(args):
-    signwriting_to_image(*args)
+    fsw, output = args
+    signwriting_to_image(fsw).save(output)
 
 
 if __name__ == "__main__":
@@ -69,4 +45,3 @@ if __name__ == "__main__":
     pool = Pool(40)
     for _ in tqdm(pool.imap_unordered(process_fsw, missing), total=len(missing)):
         pass
-

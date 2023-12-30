@@ -1,4 +1,4 @@
-# SignBank+: Preparing a Multilingual Sign Language  Dataset\\for Machine Translation Using Large Language Models
+# SignBank+: Preparing a Multilingual Sign Language  Dataset for Machine Translation Using Large Language Models
 
 [Paper](https://arxiv.org/abs/2309.11566)
 

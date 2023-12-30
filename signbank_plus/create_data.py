@@ -5,7 +5,7 @@ from pathlib import Path
 
 import psycopg2
 from dotenv import load_dotenv
-from signwriting.swu_to_fsw import swu2fsw
+from signwriting.formats.swu_to_fsw import swu2fsw
 
 load_dotenv()
 

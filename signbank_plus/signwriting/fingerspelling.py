@@ -4,7 +4,7 @@ import re
 from pathlib import Path
 from typing import Union
 
-from signwriting import join_signs
+from signwriting.utils import join_signs
 
 fingerspelling_dir = Path(__file__).parent.parent.parent.joinpath('data/fingerspelling')
 

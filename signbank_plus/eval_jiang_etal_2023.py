@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 import requests
 from tqdm import tqdm
-from signwriting.signwriting_tokenizer import SignWritingTokenizer
+from signwriting.tokenizer import SignWritingTokenizer
 
 
 def get_translation(fsw, spoken_language, country_code):

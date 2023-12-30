@@ -1,6 +1,7 @@
 import csv
 from pathlib import Path
 
+
 def load_file(name: str, array_fields: list[str] = ["texts", "annotated_texts"]):
     csv_path = Path(__file__).parent.parent / "data" / f"{name}.csv"
     with open(csv_path, "r", encoding="utf-8") as f:
@@ -32,4 +33,3 @@ def load_data(main_file: str, *modifiers: str):
                 instance.update(dict_data[key])
 
     return main_data
-

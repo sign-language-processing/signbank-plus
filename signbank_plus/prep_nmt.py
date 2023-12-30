@@ -8,7 +8,7 @@ from pathlib import Path
 from tqdm import tqdm
 
 from load_data import load_data, load_file
-from signwriting.signwriting_tokenizer import SignWritingTokenizer
+from signwriting.tokenizer import SignWritingTokenizer
 
 ALL_FLAGS = set()
 

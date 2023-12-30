@@ -11,7 +11,6 @@ from pathlib import Path
 from typing import Union
 
 from tqdm import tqdm
-from tqdm.contrib.concurrent import process_map, thread_map
 
 TMPDIR = os.getenv('TMPDIR', '/tmp')
 REPO_URL = 'https://github.com/sutton-signwriting/font-db.git'

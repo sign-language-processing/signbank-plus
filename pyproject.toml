@@ -15,6 +15,7 @@ dependencies = [
     "sockeye", # Translation model used
 ]
 
+[project.optional-dependencies]
 dev = [
     "pytest",
     "pylint"

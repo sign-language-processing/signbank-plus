@@ -1,9 +1,9 @@
 experiment:
-  name: spoken_to_signed_bpe4
+  name: spoken_to_signed_bpe7
   src: spoken
   trg: signed
   spm-vocab-size: 8000
-  spm-user-defined-symbols: "$ca,$haf,$ssp,$cse,$isr,$ukl,$eo,$tss,$isg,$mw,$sfs,$nsp,$xml,$tsq,$svk,$uk,$jos,$esl,$es,$ugy,$pt,$tsm,$bfi,$tr,$fil,$hsh,$gr,$mfs,$sdl,$ms,$sk,$bvl,$bg,$en,$ru,$fr,$slf,$gsg,$no,$jsl,$vsl,$bzs,$zh-TW,$mt,$sq,$ht,$fsl,$xki,$ins,$vgt,$da,$eth,$ps,$zh-CN,$esn,$hi,$asq,$hds,$sl,$tse,$pys,$pl,$pks,$ssr,$gn,$mdl,$dse,$sls,$lws,$ne,$fse,$nzs,$he,$zh,$prl,$ncs,$de,$ja,$ko,$csg,$csl,$psr,$ar,$sw,$ysl,$pso,$sfb,$bqn,$fi,$cs,$nsi,$swl,$rsl,$vn,$nsl,$rms,$csn,$sv,$is,$sgg,$afg,$aed,$fcs,$th,$csc,$hu,$psc,$sqk,$,$icl,$am,$ur,$ase,$nl,$kvk,$it,$ro,$gss,$dsl,$asf,$ise,$psp"
+  spm-user-defined-symbols: "$ysl,$pks,$ko,$mdl,$isr,$bzs,$slf,$gr,$ps,$rsl,$xki,$hi,$bvl,$afg,$ncs,$ukl,$sl,$csg,$nzs,$psr,$nsp,$vsl,$isg,$fil,$psc,$hu,$sk,$ca,$sls,$nsi,$vgt,$bfi,$ru,$tr,$tse,$gn,$tsq,$fr,$ms,$eo,$prl,$ase,$haf,$pl,$ar,$zh-TW,$de,$uk,$asf,$ssp,$mt,$ise,$vn,$zh,$esn,$th,$es,$pso,$mfs,$sw,$fcs,$asq,$ur,$ins,$is,$gss,$sfs,$xml,$csl,$sv,$cs,$en,$fi,$tsm,$pt,$sqk,$fse,$dsl,$dse,$gsg,$ro,$ssr,$icl,$jos,$bqn,$ne,$nl,$ugy,$tss,$bg,$ja,$,$pys,$aed,$it,$lws,$rms,$sq,$nsl,$sdl,$fsl,$zh-CN,$am,$no,$kvk,$ht,$hds,$sgg,$esl,$eth,$csc,$sfb,$csn,$da,$swl,$jsl,$svk,$hsh,$mw,$psp,$cse,$he"
 
   teacher-ensemble: 2
   # path to a pretrained backward model (optional)
@@ -77,6 +77,5 @@ datasets:
   mono-src:
     - custom-mono_/corpora/mono/words/mono
   # to be translated by the backward model to augment teacher corpus with back-translations
-  # leave empty to skip augmentation step (high resource languages)
-  mono-trg: [ ] # TODO, create monolingual signed language data
-
+  mono-trg:
+    - custom-mono_/corpora/mono/signs/mono

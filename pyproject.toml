@@ -1,0 +1,47 @@
+[project]
+name = "signbank-plus"
+description = "Preparing a Multilingual Sign Language  Dataset for Machine Translation Using Large Language Models"
+version = "0.0.1"
+authors = [
+    { name = "Amit Moryossef", email = "amitmoryossef@gmail.com" },
+    { name = "Zifan Jiang", email = "jiang@cl.uzh.ch" },
+]
+readme = "README.md"
+dependencies = [
+    # CLI
+    "pympi-ling", # Used for reading and writing ELAN files
+    "huggingface-hub", # To download the model
+    "signwriting @ git+https://github.com/sign-language-processing/signwriting", # Tokenize SignWriting
+    "sockeye", # Translation model used
+]
+
+dev = [
+    "pytest",
+    "pylint"
+]
+
+[tool.yapf]
+based_on_style = "google"
+column_limit = 120
+
+[tool.pylint]
+max-line-length = 120
+disable = [
+    "C0114", # Missing module docstring
+    "C0115", # Missing class docstring
+    "C0116", # Missing function or method docstring
+]
+
+[tool.setuptools]
+packages = [
+    "signbank_plus",
+    "signbank_plus.nmt",
+    "signbank_plus.nmt.sockeye",
+]
+
+[tool.pytest.ini_options]
+addopts = "-v"
+testpaths = ["signwriting_transcription"]
+
+[project.scripts]
+signwriting_to_text_sockeye = "signbank_plus.nmt.sockeye.bin:main"

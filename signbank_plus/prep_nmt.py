@@ -10,6 +10,8 @@ from tqdm import tqdm
 from load_data import load_data, load_file
 from signwriting.tokenizer import SignWritingTokenizer
 
+from signwriting.tokenizer import normalize_signwriting
+
 ALL_FLAGS = set()
 
 
@@ -23,7 +25,7 @@ def get_source_target(data, field="annotated_texts"):
                         "puddle_id": instance["puddle_id"] if "puddle_id" in instance else None,
                         "example_id": instance["example_id"] if "example_id" in instance else None,
                         "flags": [instance["spoken_language"], instance["sign_language"]],
-                        "source": instance["sign_writing"].strip(),
+                        "source": normalize_signwriting(instance["sign_writing"]),
                         "target": text.strip(),
                     }
 

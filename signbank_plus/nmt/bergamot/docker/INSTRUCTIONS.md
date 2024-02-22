@@ -16,7 +16,7 @@ cd /home/nlp/amit/sign-language/signbank-annotation/signbank-plus/signbank_plus/
 
 Edit `config.spoken-to-signed.yml` to point to the datasets you want to use, then:
 
-```bash
+```bash 
 # Create a directory `bergamot_models` where the training data will be stored.
 ROOT_DIR="/home/nlp/amit/bergamot_models"
 mkdir -p $ROOT_DIR
@@ -30,7 +30,7 @@ DATA_DIR="/home/nlp/amit/sign-language/signbank-annotation/signbank-plus/data"
 # shm-size is needed for multi-gpu training (otherwise, set --env NCCL_SHM_DISABLE=1)
 nvidia-docker run -it  \
     --shm-size=12gb \
-    --gpus '"device=1,2,3"' \
+    --gpus '"device=0,1,2,3"' \
 	--mount type=bind,source="$(pwd)/config.spoken-to-signed.yml",target=/firefox-translations-training/configs/config.spoken-to-signed.yml \
 	--mount type=bind,source="$(pwd)/profile.yaml",target=/firefox-translations-training/profiles/local/config.yaml \
 	--mount type=bind,source="$DATA_DIR",target=/corpora \

@@ -5,9 +5,8 @@ from pathlib import Path
 from faker import Faker
 from tqdm import tqdm
 
-from fingerspelling import spell, get_chars
 from faker.providers import person
-
+from signwriting.fingerspelling.fingerspelling import spell, get_chars, FINGERSPELLING_DIR
 
 def strip_all(word: str, space=True):
     return word.replace(" ", "" if space else " ") \
@@ -100,14 +99,17 @@ def my_name_is(language: str, country: str, iana: str, chars: dict):
         for i in range(1000):
             for faker_type in ['name', 'first_name', 'last_name']:
                 spoken_name = fake.__getattr__(faker_type)()
-                signed_name = spoken_text_fingerspelling(strip_all(spoken_name, space=False), chars)
-                spoken_name_sentence = spoken_sentence.format(name=spoken_name)
-                signed_name_sentence = signed_sentence.format(name=signed_name)
-                if random.random() < 0.5:
-                    spoken_name_sentence += "."
-                    signed_name_sentence += " S38800464x496"
+                try:
+                    signed_name = spoken_text_fingerspelling(strip_all(spoken_name, space=False), chars)
+                    spoken_name_sentence = spoken_sentence.format(name=spoken_name)
+                    signed_name_sentence = signed_sentence.format(name=signed_name)
+                    if random.random() < 0.5:
+                        spoken_name_sentence += "."
+                        signed_name_sentence += " S38800464x496"
 
-                yield spoken_name_sentence, signed_name_sentence
+                    yield spoken_name_sentence, signed_name_sentence
+                except:
+                    pass
 
 
 def fake_data_signed(language: str, country: str, iana: str, chars: dict):
@@ -124,9 +126,12 @@ def fake_data_signed(language: str, country: str, iana: str, chars: dict):
         chars["."] = ["M513x518S10a20482x483S2f900494x513"]
 
     for spoken, spoken_stripped in fake_text_data(language, country):
-        writing = spoken_text_fingerspelling(spoken_stripped, chars)
-        if writing is not None:
-            yield spoken, writing
+        try:
+            writing = spoken_text_fingerspelling(spoken_stripped, chars)
+            if writing is not None:
+                yield spoken, writing
+        except:
+            pass
 
     # Experimental: adding "my name is..." sentences
     for spoken, signed in my_name_is(language, country, iana, chars):
@@ -135,8 +140,7 @@ def fake_data_signed(language: str, country: str, iana: str, chars: dict):
 
 if __name__ == "__main__":
     current_dir = Path(__file__).parent
-    data_dir = current_dir.parent.parent / "data"
-    fingerspelling_dir = data_dir / "fingerspelling"
+    data_dir = current_dir.parent / "data"
     fingerspelling_csv = data_dir / "fingerspelling.csv"
 
     # CSV Writer
@@ -147,7 +151,7 @@ if __name__ == "__main__":
         writer = csv.writer(f)
         writer.writerow(["spoken_language", "country_code", "sign_language", "sign_writing", "texts"])
 
-        for f_path in tqdm(fingerspelling_dir.iterdir()):
+        for f_path in tqdm(FINGERSPELLING_DIR.iterdir()):
             if f_path.name == "README.md":
                 continue
 

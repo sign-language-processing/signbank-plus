@@ -61,7 +61,7 @@ def get_expanded_data_en():
     yield from get_source_target_no_test(data, field="annotated_texts")
 
 
-def test_set():
+def _test_set():
     data = load_file("benchmark", array_fields=["gold_texts"])
     yield from get_source_target(data, field="gold_texts")
 
@@ -162,7 +162,7 @@ def save_test(path: Path, data: iter):
 if __name__ == "__main__":
     parallel_path = Path(__file__).parent.parent / "data" / "parallel"
 
-    save_test(parallel_path / "test", test_set())
+    save_test(parallel_path / "test", _test_set())
 
     save_splits(parallel_path / "original", get_original_data())
     save_splits(parallel_path / "cleaned", get_cleaned_data())

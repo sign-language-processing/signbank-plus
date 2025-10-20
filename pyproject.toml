@@ -11,7 +11,7 @@ dependencies = [
     # CLI
     "pympi-ling", # Used for reading and writing ELAN files
     "huggingface-hub", # To download the model
-    "signwriting @ git+https://github.com/sign-language-processing/signwriting", # Tokenize SignWriting
+    "signwriting", # Tokenize SignWriting
     "sockeye", # Translation model used
 ]
 
